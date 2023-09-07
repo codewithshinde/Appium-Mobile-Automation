@@ -29,3 +29,24 @@ To run the tests, follow these steps:
 2. Update the test configuration in the testng.xml file to match the device settings, including `deviceName`, `platformVersion`, `uuid`, `appPackage`, `appActivity`, `portNumber`, and `strAppPath`.
 
 3. Execute the tests using the following command:
+
+
+This command will execute the tests specified in the testng.xml file in parallel on the configured devices.
+
+### Running Tests in Parallel
+
+To run tests in parallel, we utilize TestNG's parallel execution feature. In the testng.xml file, you can configure multiple test suites, each targeting different devices, as shown below:
+
+```xml
+<suite name="Automator Test Suite" parallel="tests">
+ <listeners>
+     <listener class-name="org.automator.rakesh.TestListener"/>
+ </listeners>
+ <test name="Pixel7 Test" thread-count="4">
+     <!-- Configuration for Pixel7 -->
+ </test>
+ <test name="Pixel7-2 Test" thread-count="4">
+     <!-- Configuration for Pixel7-2 -->
+ </test>
+</suite>
+
