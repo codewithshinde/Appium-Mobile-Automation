@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+
+
+<suite name="Automator Test Suit" parallel="tests">
+    <listeners>
+        <listener class-name="org.automator.rakesh.TestListner"/>
+    </listeners>
+<test name="Pixel7 Test">
+    <parameter name="deviceName" value="Pixel7"/>
+    <parameter name="platformVersion" value="11.0"/>
+    <parameter name="uuid" value="emulator-5554"/>
+    <parameter name="appPackage" value="com.wdiodemoapp"/>
+    <parameter name="appActivity" value="com.wdiodemoapp.MainActivity"/>
+    <parameter name="portNumber" value="4723"/>
+    <parameter name="strAppPath" value="C:\codewithshinde\Intellij\mobileAutomation\src\test\resources\demoApp.apk"/>
+    <classes>
+        <class name="org.automator.rakesh.LoginTest" />
+        <class name="org.automator.rakesh.SignupTest" />
+    </classes>
+</test>
+
+    <test name="Pixel7-2 Test">
+        <parameter name="deviceName" value="Pixel7-2"/>
+        <parameter name="platformVersion" value="11.0"/>
+        <parameter name="uuid" value="emulator-5556"/>
+        <parameter name="appPackage" value="com.wdiodemoapp"/>
+        <parameter name="appActivity" value="com.wdiodemoapp.MainActivity"/>
+        <parameter name="portNumber" value="4725"/>
+        <parameter name="strAppPath" value="C:\codewithshinde\Intellij\mobileAutomation\src\test\resources\demoApp.apk"/>
+        <classes>
+            <class name="org.automator.rakesh.LoginTest" />
+            <class name="org.automator.rakesh.SignupTest" />
+        </classes>
+    </test>
+</suite>
