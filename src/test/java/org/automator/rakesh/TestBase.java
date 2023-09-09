@@ -15,10 +15,27 @@ public class TestBase {
     private static boolean isFirstLaunch = true;
 
     public AndroidDriver getDriver() {
-        return threadDriver.get();
+        return DriverManager.getDriver();
     }
     private void setDriver(AndroidDriver driver) {
         threadDriver.set(driver);
+    }
+
+
+    @BeforeTest
+    @Parameters({"deviceName", "platformVersion", "uuid", "appPackage", "appActivity", "portNumber", "strAppPath"})
+    public void beforeTestMethod(String deviceName, String platformVersion, String uuid, String appPackage, String appActivity, String portNumber, String strAppPath) {
+        System.out.println("Before Test>> "+deviceName);
+        UiAutomator2Options capabilities = new UiAutomator2Options()
+                .setPlatformName("Android")
+                .setPlatformVersion(platformVersion)
+                .setDeviceName(deviceName)
+                .setUdid(uuid)
+                .setAppPackage(appPackage)
+                .setAppActivity(appActivity)
+                .setApp(strAppPath);
+        DriverManager.capsMap.put(portNumber, capabilities);
+        DriverManager.initiateDriverIfNull(portNumber);
     }
 
     //NOTE: Setup allure @Step("Set up Appium server and launch {0} app")
@@ -27,30 +44,30 @@ public class TestBase {
     public void initializeDriver(String deviceName, String platformVersion, String uuid, String appPackage, String appActivity, String portNumber, String strAppPath) {
         try {
             //startService(portNumber);
-            UiAutomator2Options capabilities = new UiAutomator2Options()
-                    .setPlatformName("Android")
-                    .setPlatformVersion(platformVersion)
-                    .setDeviceName(deviceName)
-                    .setUdid(uuid)
-                    .setAppPackage(appPackage)
-                    .setAppActivity(appActivity)
-                    .setApp(strAppPath);
-            URL url = new URL("http://127.0.0.1:"+portNumber+"/wd/hub");
-            AndroidDriver androidDriver = new AndroidDriver(url, capabilities);
-            androidDriver.manage().timeouts()
-                    .implicitlyWait(Duration.ofSeconds(5));
-            setDriver(androidDriver);
-            //setupDriverTimeouts();
+            System.out.println("Before Method>> "+deviceName);
+            UiAutomator2Options caps = DriverManager.capsMap.get(portNumber);
+            if(null != caps) {
+                System.out.println("Before Method Caps of>> "+caps.getDeviceName());
+                AndroidDriver dr = DriverManager.getDriver();
+                if(dr != null) {
+                    DriverManager.openApp(appPackage);
+                    System.out.println("Driver of>> "+dr.getCapabilities().getCapability("deviceName"));
+                } else {
+                    System.out.println("-------- END --------Driver is NULL>> ");
+                }
+            } else {
+                System.out.println("Before Method Caps is NULL");
+            }
+
         } catch (Exception ex) {
             System.out.println("initializeDriver Cause is: " + ex.getCause());
             System.out.println("initializeDriver Message: " + ex.getMessage());
         }
-
     }
 
     @BeforeClass
-    @Parameters({"uuid", "strAppPath"})
-    public void beforeClass(String uuid, String strAppPath) {
+    @Parameters({"appPackage", "strAppPath"})
+    public void beforeClass(String appPackage, String strAppPath) {
         System.out.println("Before Class invoked");
         AndroidDriver driver = getDriver();
         if (!isFirstLaunch) {
@@ -58,31 +75,31 @@ public class TestBase {
             if (driver != null) {
                 String context = driver.getContext();
                 if (context != null && context.equals("NATIVE_APP")) {
-                    driver.terminateApp(uuid);
+                    driver.terminateApp(appPackage);
                 } else {
                     //Log.info("Installing app: " + strBundleId);
                     driver.installApp(strAppPath);
                     //Log.info("App installed using: " + strAppPath);
                 }
-                driver.activateApp(uuid);
+                driver.activateApp(appPackage);
                 //Log.info("App activated using: " + strBundleId);
-            }
+           }
         } else {
             isFirstLaunch = false;
         }
     }
 
     //@Step("Terminate app using strBundleId: {0}")
-    @Parameters({"uuid"})
+    @Parameters({"appPackage"})
     @AfterClass
-    public void afterClass(String uuid) {
+    public void afterClass(String appPackage) {
         System.out.println("After Class invoked");
         AndroidDriver driver = getDriver();
         try {
             if(driver != null) {
                 String context = driver.getContext();
                 if ( context != null && context.equals("NATIVE_APP")) {
-                    driver.terminateApp(uuid);
+                    driver.terminateApp(appPackage);
                     PageBase.pause(5);
                 }
             }
@@ -92,13 +109,11 @@ public class TestBase {
         }
     }
 
+    @Parameters({"appPackage"})
     @AfterMethod
-    public void closeDriver() {
-        AndroidDriver driver = getDriver();
-        if (null != driver) {
-            driver.quit();
-            threadDriver.remove();
-        }
+    public void initiateAfterMethod(String appPackage){
+        System.out.println("----> After Method <----");
+        DriverManager.closeApp(appPackage);
     }
 
     public void startService(String portNumber) {

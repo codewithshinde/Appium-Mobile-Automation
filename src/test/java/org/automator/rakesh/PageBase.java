@@ -19,7 +19,6 @@ public class PageBase {
         this.driver = driver;
     }
 
-
     /**
      * Clicks on a mobile element.
      *

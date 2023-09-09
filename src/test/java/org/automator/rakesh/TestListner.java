@@ -20,8 +20,8 @@ public class TestListner extends TestBase implements ITestListener {
     public void onTestStart(ITestResult result) {
         System.out.println("OnTestStart");
         System.out.println("Starting TestClass: " + result.getTestClass().getRealClass().getSimpleName());
-        AndroidDriver adriver = ((TestBase) result.getInstance()).getDriver(); // Get the driver from the test class
-        setDeviceLocation(adriver, true);
+        //AndroidDriver adriver = ((TestBase) result.getInstance()).getDriver(); // Get the driver from the test class
+        //setDeviceLocation(adriver, true);
         System.out.println("Starting TestMethod: " + result.getMethod().getMethodName());
     }
 
